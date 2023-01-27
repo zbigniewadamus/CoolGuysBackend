@@ -13,7 +13,7 @@ public class Register
         this.authService = authService;
     }
 
-    public bool Exec(RegisterDto data)
+    public string Exec(RegisterDto data)
     {
         return authService.Register(data);
     }

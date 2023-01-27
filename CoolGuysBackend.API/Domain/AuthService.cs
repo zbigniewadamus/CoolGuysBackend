@@ -33,29 +33,25 @@ public class AuthService: IAuthService
         return GenerateJwtToken(credential);
     }
 
-    public bool Logout(string token)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Register(RegisterDto data)
+    public string Register(RegisterDto data)
     {
         bool exist = dbContext.UserDataEntities.FirstOrDefault(x => x.Email == data.Email) != null;
         if (exist) throw new Exception("Użytkownik z podanym mailem został już zarejestowany.");
         if (data.Password != data.PasswordConfirm) throw new Exception("Hasła nie są takie same.");
-        var newUser = new UserDataEntity
+        var newUserData = new UserDataEntity
         {
-            Email = data.Email
+            Email = data.Email,
+            User = new UserEntity()
         };
-        newUser.Password = hasher.HashPassword(newUser, data.Password);
-        dbContext.UserDataEntities.Add(newUser);
+        newUserData.Password = hasher.HashPassword(newUserData, data.Password);
+        var entity = dbContext.UserDataEntities.Add(newUserData);
         dbContext.SaveChanges();
-        return true;
+        return GenerateJwtToken(entity.Entity);
     }
     private string GenerateJwtToken(UserDataEntity user)
     {
         var claims = new[] {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -65,7 +61,6 @@ public class AuthService: IAuthService
             issuer: "coolguys",
             audience: "coolguys",
             claims: claims,
-            expires: DateTime.Now.AddMinutes(30),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

@@ -39,8 +39,8 @@ public class AuthController : ControllerBase
         try
         {
             var task = register.Exec(data);
-            if (task)
-                return Ok(new ResponseMessage { message = "Użytkownik zarejestrowany" });
+            if (!string.IsNullOrEmpty(task))
+                return Ok(new ResponseMessage { message = task });
             else
                 return Problem("Coś poszło nie tak.", statusCode: 405);
         }

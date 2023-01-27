@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,10 +9,5 @@ public class UserDataEntity
     public int Id { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-
-    public void Configure(EntityTypeBuilder<UserDataEntity> builder)
-    {
-        builder.Property(x => x.Id).ValueGeneratedOnAdd();
-        builder.ToTable("UserData");
-    }
+    public UserEntity User { get; set; }
 }

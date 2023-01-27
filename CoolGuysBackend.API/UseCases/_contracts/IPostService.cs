@@ -3,7 +3,8 @@ namespace CoolGuysBackend.UseCases._contracts;
 
 public interface IPostService
 {
-    Task<bool> Create(PostDto data);
-    Task<List<Post>> ShowAll();
-    Task<bool> Vote(bool positive);
+    Task<int> Create(int userId, PostDto data);
+    Task<List<Post>> ShowAll(int userId, int page);
+    Task<bool> Vote(int postId, bool positive);
+    Task<Post> AddImage(int postId, IFormFile data);
 }
